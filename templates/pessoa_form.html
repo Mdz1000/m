@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Nova Pessoa{% endblock %}
+{% block content %}
+<h4 class="fw-bold mb-4">Nova pessoa</h4>
+<div class="row"><div class="col-md-6">
+<div class="card p-4">
+<form method="POST" id="form-pessoa">
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Nome completo</label>
+        <input type="text" name="nome" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Tipo</label>
+        <select name="tipo" id="tipo" class="form-select" onchange="toggleCampos()" required>
+            <option value="">Selecione</option>
+            <option value="militar">Militar</option>
+            <option value="civil">Civil</option>
+        </select>
+    </div>
+    <div id="campo-nip" class="mb-3 d-none">
+        <label class="form-label fw-semibold">NIP</label>
+        <input type="text" name="nip" class="form-control" placeholder="Ex: 1234567">
+    </div>
+    <div id="campo-cpf" class="mb-3 d-none">
+        <label class="form-label fw-semibold">CPF</label>
+        <input type="text" name="cpf" class="form-control" placeholder="Ex: 123.456.789-00">
+    </div>
+    <div class="mb-4">
+        <label class="form-label fw-semibold">Quartel / Organização <span class="text-muted fw-normal">(opcional)</span></label>
+        <input type="text" name="quartel" class="form-control" placeholder="Ex: 1º DN">
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+</form>
+</div></div></div>
+{% endblock %}
+{% block scripts %}
+<script>
+function toggleCampos() {
+    const tipo = document.getElementById('tipo').value;
+    document.getElementById('campo-nip').classList.toggle('d-none', tipo !== 'militar');
+    document.getElementById('campo-cpf').classList.toggle('d-none', tipo !== 'civil');
+}
+</script>
+{% endblock %}

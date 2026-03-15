@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Check-out{% endblock %}
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="bi bi-box-arrow-up me-2 text-danger"></i>Check-out — devolução de chave</h4>
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card p-4">
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Chave a devolver</label>
+                    <select name="chave_id" class="form-select form-select-lg" required>
+                        <option value="">Selecione a chave</option>
+                        {% for c in chaves %}
+                        <option value="{{ c.id }}">
+                            {{ c.andar }}º andar — nº {{ c.numero }}
+                            {% if c.descricao %}({{ c.descricao }}){% endif %}
+                            — {{ c.retirada_por or 'desconhecido' }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if not chaves %}
+                    <div class="form-text text-muted">Nenhuma chave retirada no momento.</div>
+                    {% endif %}
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Observação <span class="text-muted fw-normal">(opcional)</span></label>
+                    <input type="text" name="observacao" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-danger btn-lg w-100 fw-semibold">
+                    <i class="bi bi-check-lg me-1"></i> Registrar devolução
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

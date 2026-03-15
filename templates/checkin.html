@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Check-in{% endblock %}
+
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="bi bi-box-arrow-in-down me-2 text-success"></i>Check-in de chave</h4>
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card p-4">
+            <form method="POST">
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">NIP (militar) ou CPF (civil)</label>
+                    <input type="text" name="identificador" id="identificador"
+                           class="form-control form-control-lg"
+                           placeholder="Ex: 1234567 ou 123.456.789-00"
+                           autocomplete="off" required>
+                    <div id="pessoa-info" class="mt-2 small text-muted"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Chave</label>
+                    <select name="chave_id" class="form-select form-select-lg" required>
+                        <option value="">Selecione uma chave disponível</option>
+                        {% for c in chaves %}
+                        <option value="{{ c.id }}">
+                            {{ c.andar }}º andar — nº {{ c.numero }}
+                            {% if c.descricao %}({{ c.descricao }}){% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if not chaves %}
+                    <div class="form-text text-danger">Nenhuma chave disponível no momento.</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Observação <span class="text-muted fw-normal">(opcional)</span></label>
+                    <input type="text" name="observacao" class="form-control" placeholder="Ex: retirada para manutenção">
+                </div>
+
+                <button type="submit" class="btn btn-success btn-lg w-100 fw-semibold">
+                    <i class="bi bi-check-lg me-1"></i> Registrar check-in
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const input = document.getElementById('identificador');
+const info  = document.getElementById('pessoa-info');
+let timer;
+
+input.addEventListener('input', () => {
+    clearTimeout(timer);
+    const val = input.value.trim();
+    if (val.length < 3) { info.textContent = ''; return; }
+    timer = setTimeout(async () => {
+        const res  = await fetch(`/api/buscar_pessoa?q=${encodeURIComponent(val)}`);
+        const data = await res.json();
+        if (data) {
+            info.innerHTML = `<span class="text-success"><i class="bi bi-person-check me-1"></i>
+                <strong>${data.nome}</strong> — ${data.tipo === 'militar' ? 'Militar' : 'Civil'}
+                ${data.quartel ? '/ ' + data.quartel : ''}</span>`;
+        } else {
+            info.innerHTML = `<span class="text-danger"><i class="bi bi-person-x me-1"></i>Pessoa não encontrada.</span>`;
+        }
+    }, 500);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Relatórios{% endblock %}
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="bi bi-bar-chart me-2"></i>Relatório de movimentações</h4>
+
+<!-- Filtros -->
+<div class="card p-3 mb-4">
+    <form method="GET" class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">Data início</label>
+            <input type="date" name="data_inicio" class="form-control"
+                   value="{{ filtros.data_inicio or '' }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">Data fim</label>
+            <input type="date" name="data_fim" class="form-control"
+                   value="{{ filtros.data_fim or '' }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">Chave</label>
+            <select name="chave_id" class="form-select">
+                <option value="">Todas</option>
+                {% for c in chaves %}
+                <option value="{{ c.id }}" {% if filtros.chave_id == c.id|string %}selected{% endif %}>
+                    {{ c.andar }}º — nº {{ c.numero }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-fill">Filtrar</button>
+            <a href="{{ url_for('relatorios') }}" class="btn btn-outline-secondary">Limpar</a>
+        </div>
+    </form>
+</div>
+
+<!-- Tabela -->
+<div class="card">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">{{ movimentacoes|length }} registro(s)</span>
+        <a href="{{ url_for('relatorio_em_uso') }}" class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-clock me-1"></i>Ver chaves em uso agora
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover table-sm mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Tipo</th>
+                    <th>Chave</th>
+                    <th>Pessoa</th>
+                    <th>NIP / CPF</th>
+                    <th>Operador</th>
+                    <th>Obs.</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in movimentacoes %}
+                <tr>
+                    <td class="small">{{ m.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>
+                        {% if m.tipo == 'checkin' %}
+                            <span class="badge bg-success">Check-in</span>
+                        {% else %}
+                            <span class="badge bg-danger">Check-out</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ m.andar }}º — {{ m.numero }}</td>
+                    <td>{{ m.pessoa_nome }}</td>
+                    <td class="text-muted small">{{ m.nip or m.cpf or '—' }}</td>
+                    <td class="text-muted small">{{ m.operador_nome }}</td>
+                    <td class="text-muted small">{{ m.observacao or '—' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-muted py-4">Nenhum registro encontrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
