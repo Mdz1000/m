@@ -64,9 +64,6 @@ python database/seed.py
 python app.py
 ```
 
-Acesse: http://localhost:5000  
-Login: `admin` | Senha: `admin123`
-
 ## Estrutura do projeto
 
 ```
